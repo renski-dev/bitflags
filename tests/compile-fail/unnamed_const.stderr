@@ -3,22 +3,8 @@ error: expected identifier, found reserved identifier `_`
   |
 7 |         const A = Self::_.bits();
   |                         ^ expected identifier, found reserved identifier
-
-error[E0599]: no associated item named `_` found for struct `Unnamed` in the current scope
- --> tests/compile-fail/unnamed_const.rs:7:25
   |
-3 | / bitflags! {
-4 | |     pub struct Unnamed: u8 {
-5 | |         const _ = 1;
-6 | |
-7 | |         const A = Self::_.bits();
-  | |                         ^ associated item not found in `Unnamed`
-8 | |     }
-9 | | }
-  | |_- associated item `_` not found for this struct
+ ::: src/lib.rs
   |
-help: there is an associated constant `A` with a similar name
-  |
-7 -         const A = Self::_.bits();
-7 +         const A = Self::A.bits();
-  |
+  |                 const $Flag:tt = $value:expr;
+  |                                  ----------- while parsing argument for this `expr` macro fragment
