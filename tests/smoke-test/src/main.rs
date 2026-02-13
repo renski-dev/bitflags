@@ -42,7 +42,7 @@
     variant_size_differences
 )]
 
-//! An example file for smoke tests
+//! An example file for smoke tests.
 
 use bitflags::bitflags;
 
