@@ -19,14 +19,7 @@ pub fn serialize<B: Flags, S: Serializer>(flags: &B, serializer: S) -> Result<S:
 where
     B::Bits: WriteHex + Serialize,
 {
-    // Serialize human-readable flags as a string like `"A | B"`
-    if serializer.is_human_readable() {
-        serializer.collect_str(&parser::AsDisplay(flags))
-    }
-    // Serialize non-human-readable flags directly as the underlying bits
-    else {
-        flags.bits().serialize(serializer)
-    }
+    flags.bits().serialize(serializer)
 }
 
 /**
@@ -38,32 +31,8 @@ pub fn deserialize<'de, B: Flags, D: Deserializer<'de>>(deserializer: D) -> Resu
 where
     B::Bits: ParseHex + Deserialize<'de>,
 {
-    if deserializer.is_human_readable() {
-        // Deserialize human-readable flags by parsing them from strings like `"A | B"`
-        struct FlagsVisitor<B>(core::marker::PhantomData<B>);
-
-        impl<'de, B: Flags> Visitor<'de> for FlagsVisitor<B>
-        where
-            B::Bits: ParseHex,
-        {
-            type Value = B;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-                formatter.write_str("a string value of `|` separated flags")
-            }
-
-            fn visit_str<E: Error>(self, flags: &str) -> Result<Self::Value, E> {
-                parser::from_str(flags).map_err(|e| E::custom(e))
-            }
-        }
-
-        deserializer.deserialize_str(FlagsVisitor(Default::default()))
-    } else {
-        // Deserialize non-human-readable flags directly from the underlying bits
-        let bits = B::Bits::deserialize(deserializer)?;
-
-        Ok(B::from_bits_retain(bits))
-    }
+    let bits = B::Bits::deserialize(deserializer)?;
+    Ok(B::from_bits_retain(bits))
 }
 
 #[cfg(test)]
